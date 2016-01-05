@@ -18,21 +18,25 @@ my $fasta = $ARGV[0] or die $usage;
 
 #READ_IN: 
 my $seqio_obj = Bio::SeqIO->new('-file' => "<$fasta", 
-				'-format' => "fasta"
+				'-format' => "fasta",
+				'-alphabet' => "dna"
     );
 
 # count number of ambiguities for the whole file
 
 my %hash;
 my @sequence;
-my $ambiguities;
+my $ambiguities=0;
+my $total_chars=0;
 
 while (my $inseq = $seqio_obj->next_seq) {
 
     @sequence = split ("", $inseq->seq);
     
     foreach my $i (@sequence) {
-	
+
+	$total_chars++;
+
 	if ($i !~/(A|C|G|T|a|c|t|g|-)/) { 
 
 	    $ambiguities++;
@@ -40,10 +44,12 @@ while (my $inseq = $seqio_obj->next_seq) {
     }
 }
 
-#print "number of ambiguous characters (!~/(A|C|G|T|a|c|t|g|-):\n";
-#print "$ambiguities\n";
+my $proportion = $ambiguities / $total_chars;
+
+#print "proportion of ambiguous characters (!~/(A|C|G|T|a|c|t|g|-):\n";
+#print "proportion$\n";
 #print STDERR "\nDone!\n";
 
 # print infile and counts (to be run in a loop)
-print "$fasta\t$ambiguities\n";
+print "$fasta\t$proportion\n";
 #print STDERR "Done!\n";                                                                                  
